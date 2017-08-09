@@ -2,7 +2,7 @@
 - Project **Book Listing** of Android Basics Nanodegree
 - [Android Basics Nanodegree at Udacity.com](https://www.udacity.com/course/android-basics-nanodegree-by-google--nd803).
 
-## Android Goodies
+## Android Items
 - HttpURLConnection.
 - Loader.
 - AsyncTask.
