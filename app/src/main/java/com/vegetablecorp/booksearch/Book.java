@@ -1,9 +1,5 @@
 package com.vegetablecorp.booksearch;
 
-/**
- * Created by Megatron on 2017-07-19.
- */
-
 public class Book {
 
     private String mTitle;

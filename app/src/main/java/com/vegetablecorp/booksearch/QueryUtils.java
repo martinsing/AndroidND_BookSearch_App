@@ -18,13 +18,11 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by Megatron on 2017-07-19.
- */
-
 public final class QueryUtils {
 
-    /** Tag for the log messages */
+    /**
+     * Tag for the log messages
+     */
     private static final String LOG_TAG = QueryUtils.class.getSimpleName();
 
     /**
@@ -137,6 +135,9 @@ public final class QueryUtils {
      * parsing the given JSON response.
      */
     private static List<Book> extractFeatureFromJson(String bookJSON) {
+
+        String authors;
+
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(bookJSON)) {
             return null;
@@ -149,51 +150,54 @@ public final class QueryUtils {
         // is formatted, a JSONException exception object will be thrown.
         // Catch the exception so the app doesn't crash, and print the error message to the logs.
         try {
-
             // Create a JSONObject from the JSON response string
             JSONObject baseJsonResponse = new JSONObject(bookJSON);
 
-            // Extract the JSONArray associated with the key called "items",
-            // which represents a list of features (or books).
-            JSONArray bookArray = baseJsonResponse.getJSONArray("items");
+            // perform the check first before trying to parse the field
+            if (baseJsonResponse.has("items")) {
 
-            // For each book in the bookArray, create an {@link Book} object
-            for (int i = 0; i < bookArray.length(); i++) {
+                // Extract the JSONArray associated with the key called "items",
+                // which represents a list of features (or books).
+                JSONArray bookArray = baseJsonResponse.getJSONArray("items");
 
-                // Get a single book at position i within the list of books
-                JSONObject currentBook = bookArray.getJSONObject(i);
+                // For each book in the bookArray, create an {@link Book} object
+                for (int i = 0; i < bookArray.length(); i++) {
 
-                // For a given book, extract the JSONObject associated with the
-                // key called "items", which represents a list of all items
-                // for that book.
-                JSONObject items = currentBook.getJSONObject("volumeInfo");
+                    // Get a single book at position i within the list of books
+                    JSONObject currentBook = bookArray.getJSONObject(i);
 
-                // Extract the value for the key called "title"
-                String title = items.getString("title");
+                    // For a given book, extract the JSONObject associated with the
+                    // key called "items", which represents a list of all items
+                    // for that book.
+                    JSONObject items = currentBook.getJSONObject("volumeInfo");
 
-                // Extract the value for the key called "authors"
-                String authors = items.getString("authors");
+                    // Extract the value for the key called "title"
+                    String title = items.getString("title");
 
-                // Extract the value for the key called "infoLink"
-                String infoLink = items.getString("infoLink");
+                    if (items.has("authors")) {
+                        // Extract the value for the key called "authors"
+                        authors = items.getString("authors");
+                    } else {
+                        authors = "N/A";
+                    }
+                    // Extract the value for the key called "infoLink"
+                    String infoLink = items.getString("infoLink");
 
-                // Create a new {@link Book} object with the magnitude, title, time,
-                // and infoLink from the JSON response.
-                Book book = new Book(title, authors, infoLink);
+                    // Create a new {@link Book} object with the magnitude, title, time,
+                    // and infoLink from the JSON response.
+                    Book book = new Book(title, authors, infoLink);
 
-                // Add the new {@link Book} to the list of books.
-                books.add(book);
+                    // Add the new {@link Book} to the list of books.
+                    books.add(book);
+                }
             }
-
         } catch (JSONException e) {
             // If an error is thrown when executing any of the above statements in the "try" block,
             // catch the exception here, so the app doesn't crash. Print a log message
             // with the message from the exception.
             Log.e("QueryUtils", "Problem parsing the book JSON results", e);
         }
-
         // Return the list of books
         return books;
     }
-
 }
